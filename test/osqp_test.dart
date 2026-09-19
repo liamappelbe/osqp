@@ -12,5 +12,11 @@ void main() {
     test('First Test', () {
       expect(awesome.isAwesome, isTrue);
     });
+
+    test('OSQP native library is loaded and returns version', () {
+      final version = osqpVersion();
+      expect(version, isNotEmpty);
+      expect(version, startsWith('1.'));
+    });
   });
 }

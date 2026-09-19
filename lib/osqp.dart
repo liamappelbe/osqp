@@ -1,8 +1,11 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
-library;
+import 'dart:ffi';
+
+import 'package:ffi/ffi.dart';
 
 export 'src/osqp_base.dart';
 
-// TODO: Export any libraries intended for clients of this package.
+@Native<Pointer<Utf8> Function()>(symbol: 'osqp_version')
+external Pointer<Utf8> _osqpVersion();
+
+/// Returns the OSQP library version string.
+String osqpVersion() => _osqpVersion().toDartString();
