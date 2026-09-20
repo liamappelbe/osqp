@@ -1,4 +1,4 @@
-name: Analyze & Format
+name: CI
 
 on:
   push:
@@ -28,3 +28,19 @@ jobs:
         run: |
           dart run tool/ffigen.dart
           git diff --exit-code
+
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - run: dart pub get
+      - run: dart test
