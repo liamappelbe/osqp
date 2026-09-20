@@ -1,5 +1,8 @@
 # package:osqp
 
+[![pub package](https://img.shields.io/pub/v/osqp.svg)](https://pub.dev/packages/osqp)
+[![Build Status](https://github.com/liamappelbe/osqp/workflows/CI/badge.svg)](https://github.com/liamappelbe/osqp/actions?query=workflow%3ACI+branch%3Amain)
+
 Dart FFI bindings for [OSQP](https://github.com/osqp/OSQP) (Operator Splitting
 Quadratic Program) solver.
 

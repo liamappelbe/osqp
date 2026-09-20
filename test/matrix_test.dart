@@ -154,8 +154,7 @@ void main() {
       );
       expect(eye.pointer.ref.x.asTypedList(3), equals([1.0, 1.0, 1.0]));
 
-      expect(() => Matrix.identity(-1), throwsA(isA<AssertionError>()));
-      expect(() => Matrix.identity(0), throwsA(isA<AssertionError>()));
+      expect(() => Matrix.identity(-1), throwsArgumentError);
     });
 
     test('zeros constructor', () {
