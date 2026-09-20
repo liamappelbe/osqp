@@ -12,12 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:ffi/ffi.dart';
-
-import 'src/osqp_bindings.g.dart' as bindings;
-
-export 'src/osqp_base.dart';
 export 'src/osqp_bindings.g.dart';
-
-/// Returns the OSQP library version string.
-String osqpVersion() => bindings.osqp_version().cast<Utf8>().toDartString();
