@@ -15,7 +15,7 @@ Future<void> downloadFile(Uri uri, File destination) async {
 }
 
 Future<void> main(List<String> args) async {
-  final packageRoot = File.fromUri(Platform.script).parent;
+  final packageRoot = File.fromUri(Platform.script).parent.parent;
   final thirdPartyDir = Directory.fromUri(
     packageRoot.uri.resolve('third_party/'),
   );
