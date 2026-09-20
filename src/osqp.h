@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:ffi/ffi.dart';
+#ifndef OSQP_WRAPPER_H
+#define OSQP_WRAPPER_H
 
-import 'src/osqp_bindings.g.dart' as bindings;
+#include "osqp_configure.h"
+#include "../third_party/osqp/include/public/osqp.h"
 
-export 'src/osqp_base.dart';
-export 'src/osqp_bindings.g.dart';
-
-/// Returns the OSQP library version string.
-String osqpVersion() => bindings.osqp_version().cast<Utf8>().toDartString();
+#endif /* ifndef OSQP_WRAPPER_H */

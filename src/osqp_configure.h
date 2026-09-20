@@ -12,12 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:ffi/ffi.dart';
+// This header only exists to satisfy the `#include "osqp_configure.h"`
+// directive in OSQP headers during FFIgen code generation, and is not used
+// during CMake builds (since CMake generates its own configuration header in
+// the build directory).
 
-import 'src/osqp_bindings.g.dart' as bindings;
+#ifndef OSQP_CONFIGURE_H
+#define OSQP_CONFIGURE_H
 
-export 'src/osqp_base.dart';
-export 'src/osqp_bindings.g.dart';
+#ifndef FFIGEN
+#error "osqp_configure.h should only be included during FFIgen code generation"
+#endif
 
-/// Returns the OSQP library version string.
-String osqpVersion() => bindings.osqp_version().cast<Utf8>().toDartString();
+/* OSQP_USE_LONG */
+#define OSQP_USE_LONG
+
+#endif /* ifndef OSQP_CONFIGURE_H */

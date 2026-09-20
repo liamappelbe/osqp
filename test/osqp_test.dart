@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:ffi';
+
 import 'package:osqp/osqp.dart';
 import 'package:test/test.dart';
 
@@ -31,6 +33,24 @@ void main() {
       final version = osqpVersion();
       expect(version, isNotEmpty);
       expect(version, startsWith('1.'));
+    });
+
+    test('OSQP settings and capabilities via generated bindings', () {
+      final capabilities = osqp_capabilities();
+      expect(capabilities, isNonZero);
+
+      final settings = OSQPSettings_new();
+      expect(settings.address, isNonZero);
+      expect(settings.ref.verbose, equals(OSQP_VERBOSE));
+      OSQPSettings_free(settings);
+    });
+
+    test('OSQP CSC matrix creation via generated bindings', () {
+      final mat = OSQPCscMatrix_zeros(3, 3);
+      expect(mat.address, isNonZero);
+      expect(mat.ref.m, equals(3));
+      expect(mat.ref.n, equals(3));
+      OSQPCscMatrix_free(mat);
     });
   });
 }
