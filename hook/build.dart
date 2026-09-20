@@ -39,6 +39,7 @@ void main(List<String> args) async {
         'OSQP_BUILD_SHARED_LIB': 'ON',
         'OSQP_BUILD_STATIC_LIB': 'OFF',
         'CMAKE_INSTALL_PREFIX': installDir.toFilePath(),
+        'CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS': 'ON',
       },
       targets: ['install'],
       logger: logger,
