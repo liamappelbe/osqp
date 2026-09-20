@@ -33,7 +33,7 @@ void main() {
       );
     });
 
-    test('solves canonical QP problem', () {
+    test('solves canonical QP problem with raw pointers', () {
       // Port of third_party/osqp/examples/osqp_simple_demo.c and
       // third_party/osqp/tests/demo/test_demo.cpp:
       //
@@ -135,6 +135,7 @@ void main() {
 
         expect(info.status_val, equals(osqp_status_type.OSQP_SOLVED.value));
         expect(statusStr, equals('solved'));
+        expect(info.statusString, equals('solved'));
         expect(info.iter, greaterThan(0));
         expect(info.obj_val, closeTo(1.88, 1e-3));
 
@@ -164,7 +165,7 @@ void main() {
       }
     });
 
-    test('solves QP using arena allocator', () {
+    test('solves canonical QP problem with arena allocator', () {
       using((arena) {
         const n = 2;
         const m = 3;

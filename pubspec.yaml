@@ -1,5 +1,5 @@
 name: osqp
-description: Dart FFI bindings for OSQP.
+description: Dart bindings for the OSQP quadratic programming solver.
 version: 1.0.0
 repository: https://github.com/liamappelbe/osqp
 

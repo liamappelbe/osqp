@@ -12,7 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Dart FFI bindings for [OSQP](https://osqp.org/).
+/// Dart bindings and high-level API for [OSQP](https://osqp.org/).
 library;
 
+export 'src/matrix.dart';
 export 'src/osqp_bindings.g.dart';
+export 'src/settings.dart';
+export 'src/solver.dart';
+export 'src/util.dart';
