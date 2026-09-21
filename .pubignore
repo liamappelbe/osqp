@@ -1,0 +1,7 @@
+tool/
+third_party/osqp/docs/
+third_party/osqp/tests/
+third_party/osqp/site/
+third_party/osqp/examples/
+third_party/osqp/.github/
+third_party/osqp/.*

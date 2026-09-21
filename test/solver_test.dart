@@ -471,5 +471,46 @@ void main() {
         throwsArgumentError,
       );
     });
+
+    test('solves with double.infinity and -double.infinity bounds', () {
+      // min  1/2 x' [4 1; 0 2] x + [1 1]' x
+      // s.t. 1 <= x1 + x2 <= 1 (equality)
+      //      0 <= x1 <= inf
+      //      -inf <= x2 <= 0.7
+      // Optimal solution: x* = [0.3, 0.7]
+      final p = Matrix.fromTriplets(2, 2, [
+        (0, 0, 4.0),
+        (0, 1, 1.0),
+        (1, 1, 2.0),
+      ]);
+      final q = [1.0, 1.0];
+      final a = Matrix.fromTriplets(3, 2, [
+        (0, 0, 1.0),
+        (0, 1, 1.0),
+        (1, 0, 1.0),
+        (2, 1, 1.0),
+      ]);
+      final l = [1.0, 0.0, -double.infinity];
+      final u = [1.0, double.infinity, 0.7];
+
+      final settings = Settings(polishing: true, verbose: false);
+      final solver = Solver(p: p, q: q, a: a, l: l, u: u, settings: settings);
+
+      try {
+        final res = solver.solve();
+        expect(res.status, equals('solved'));
+        expect(res.isSolved, isTrue);
+        expect(res.isInfeasible, isFalse);
+        expect(res.objVal.isNaN, isFalse);
+        expect(res.x[0].isNaN, isFalse);
+        expect(res.x[1].isNaN, isFalse);
+        expect(res.x[0], closeTo(0.3, 1e-3));
+        expect(res.x[1], closeTo(0.7, 1e-3));
+        expect(res.iter, lessThan(settings.maxIter));
+      } finally {
+        solver.dispose();
+        settings.dispose();
+      }
+    });
   });
 }

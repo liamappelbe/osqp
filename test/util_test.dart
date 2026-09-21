@@ -63,6 +63,21 @@ void main() {
       });
     });
 
+    test('copyFloatList clamps double.infinity and -double.infinity', () {
+      using((arena) {
+        final floatPtr = copyFloatList(arena, [
+          double.infinity,
+          -double.infinity,
+          1.5,
+          -2.5,
+        ]);
+        expect(floatPtr[0], equals(OSQP_INFTY));
+        expect(floatPtr[1], equals(-OSQP_INFTY));
+        expect(floatPtr[2], equals(1.5));
+        expect(floatPtr[3], equals(-2.5));
+      });
+    });
+
     test('OsqpException formats known and unknown error codes', () {
       final known = OsqpException(
         osqp_error_type.OSQP_DATA_VALIDATION_ERROR.value,

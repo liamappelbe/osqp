@@ -189,6 +189,95 @@ void main() {
       expect(diag.pointer.ref.x.asTypedList(3), equals([2.0, 5.0, 3.0]));
     });
 
+    test(
+      'fromTriplets constructs correct CSC structure and sorts by col then row',
+      () {
+        final mat = Matrix.fromTriplets(3, 3, [
+          (2, 2, 6.0),
+          (0, 0, 1.0),
+          (1, 1, 3.0),
+          (0, 1, 2.0),
+          (2, 0, 5.0),
+          (1, 2, 4.0),
+        ]);
+
+        expect(mat.rows, equals(3));
+        expect(mat.cols, equals(3));
+        expect(mat.nnz, equals(6));
+        expect(
+          mat.pointer.ref.p.cast<ffi.Int64>().asTypedList(4),
+          equals([0, 2, 4, 6]),
+        );
+        expect(
+          mat.pointer.ref.i.cast<ffi.Int64>().asTypedList(6),
+          equals([0, 2, 0, 1, 1, 2]),
+        );
+        expect(
+          mat.pointer.ref.x.asTypedList(6),
+          equals([1.0, 5.0, 2.0, 3.0, 4.0, 6.0]),
+        );
+      },
+    );
+
+    test('fromTriplets throws on duplicate coordinates', () {
+      expect(
+        () => Matrix.fromTriplets(2, 2, [
+          (0, 0, 1.5),
+          (0, 0, 2.5),
+          (1, 0, 1.0),
+          (1, 0, -0.5),
+          (0, 1, 3.0),
+          (0, 0, -1.0),
+        ]),
+        throwsArgumentError,
+      );
+    });
+
+    test('fromTriplets with upperTriangular folds lower entries to upper', () {
+      final mat = Matrix.fromTriplets(2, 2, [
+        (0, 0, 4.0),
+        (1, 0, 1.0),
+        (1, 1, 2.0),
+      ], upperTriangular: true);
+
+      expect(mat.rows, equals(2));
+      expect(mat.cols, equals(2));
+      expect(mat.nnz, equals(3));
+      expect(
+        mat.pointer.ref.p.cast<ffi.Int64>().asTypedList(3),
+        equals([0, 1, 3]),
+      );
+      expect(
+        mat.pointer.ref.i.cast<ffi.Int64>().asTypedList(3),
+        equals([0, 0, 1]),
+      );
+      expect(mat.pointer.ref.x.asTypedList(3), equals([4.0, 1.0, 2.0]));
+
+      expect(
+        () => Matrix.fromTriplets(2, 2, [
+          (0, 0, 4.0),
+          (1, 0, 2.0),
+          (0, 1, 3.0),
+          (1, 1, 1.0),
+        ], upperTriangular: true),
+        throwsArgumentError,
+      );
+    });
+
+    test('fromTriplets validates index bounds and dimensions', () {
+      expect(() => Matrix.fromTriplets(-1, 2, []), throwsArgumentError);
+      expect(() => Matrix.fromTriplets(2, -1, []), throwsArgumentError);
+
+      expect(() => Matrix.fromTriplets(2, 2, [(-1, 0, 1.0)]), throwsRangeError);
+      expect(() => Matrix.fromTriplets(2, 2, [(2, 0, 1.0)]), throwsRangeError);
+      expect(() => Matrix.fromTriplets(2, 2, [(0, -1, 1.0)]), throwsRangeError);
+      expect(() => Matrix.fromTriplets(2, 2, [(0, 2, 1.0)]), throwsRangeError);
+      expect(
+        () => Matrix.fromTriplets(2, 2, [(2, 1, 1.0)], upperTriangular: true),
+        throwsRangeError,
+      );
+    });
+
     test('disposal prevents use-after-free and throws StateError', () {
       final mat = Matrix.identity(2);
       expect(mat.isDisposed, isFalse);

@@ -72,7 +72,8 @@ class Matrix implements Finalizable {
     return Matrix._(OSQPCscMatrix_zeros(rows, cols));
   }
 
-  /// Creates a diagonal matrix of size [rows] x [cols] with [scalar] along the diagonal.
+  /// Creates a diagonal matrix of size [rows] x [cols] with [scalar] along the
+  /// diagonal.
   factory Matrix.diagonalScalar(int rows, int cols, double scalar) {
     if (rows < 0 || cols < 0) {
       throw ArgumentError('Dimensions must be non-negative.');
@@ -131,7 +132,8 @@ class Matrix implements Finalizable {
 
   /// Creates a [Matrix] from a dense 2D list `matrix[row][col]`.
   ///
-  /// If [upperTriangular] is `true`, only elements with `row <= col` are included.
+  /// If [upperTriangular] is `true`, only elements with `row <= col` are
+  /// included.
   factory Matrix.fromDense(
     List<List<double>> matrix, {
     bool upperTriangular = false,
@@ -175,6 +177,87 @@ class Matrix implements Finalizable {
   /// Extracts the upper triangular part of [matrix].
   factory Matrix.upperTriangular(List<List<double>> matrix) =>
       Matrix.fromDense(matrix, upperTriangular: true);
+
+  /// Creates a [Matrix] from sparse triplet entries `(row, col, value)`.
+  ///
+  /// If [upperTriangular] is `true`, entries `(r, c, v)` are folded into
+  /// `(min(r, c), max(r, c), v)`.
+  ///
+  /// Throws [ArgumentError] if [rows] or [cols] are negative.
+  /// Throws [RangeError] if any triplet coordinates are out of bounds.
+  factory Matrix.fromTriplets(
+    int rows,
+    int cols,
+    Iterable<(int row, int col, double value)> triplets, {
+    bool upperTriangular = false,
+  }) {
+    if (rows < 0 || cols < 0) {
+      throw ArgumentError('Dimensions must be non-negative.');
+    }
+
+    final list = <({int row, int col, double value})>[];
+    for (final (row, col, value) in triplets) {
+      if (row < 0 || row >= rows || col < 0 || col >= cols) {
+        throw RangeError(
+          'Index ($row, $col) out of bounds for matrix of size $rows x $cols.',
+        );
+      }
+      var r = row;
+      var c = col;
+      if (upperTriangular && r > c) {
+        final tmp = r;
+        r = c;
+        c = tmp;
+        if (r >= rows || c >= cols) {
+          throw RangeError(
+            'Folded index ($r, $c) out of bounds for matrix of size '
+            '$rows x $cols.',
+          );
+        }
+      }
+      list.add((row: r, col: c, value: value));
+    }
+
+    list.sort((a, b) {
+      final colComp = a.col.compareTo(b.col);
+      if (colComp != 0) return colComp;
+      return a.row.compareTo(b.row);
+    });
+
+    final merged = <({int row, int col, double value})>[];
+    for (final entry in list) {
+      if (merged.isNotEmpty &&
+          merged.last.row == entry.row &&
+          merged.last.col == entry.col) {
+        throw ArgumentError(
+          'Duplicate entries at (${entry.row}, ${entry.col})',
+        );
+      }
+      merged.add(entry);
+    }
+
+    final nnz = merged.length;
+    final pP = calloc<OSQPInt>(cols + 1);
+    final pI = calloc<OSQPInt>(nnz);
+    final pX = calloc<OSQPFloat>(nnz);
+
+    for (var k = 0; k < nnz; k++) {
+      pI[k] = merged[k].row;
+      pX[k] = merged[k].value;
+    }
+
+    var currentIdx = 0;
+    for (var c = 0; c < cols; c++) {
+      pP[c] = currentIdx;
+      while (currentIdx < nnz && merged[currentIdx].col == c) {
+        currentIdx++;
+      }
+    }
+    pP[cols] = nnz;
+
+    final mat = OSQPCscMatrix_new(rows, cols, nnz, pX, pI, pP)..ref.owned = 1;
+    return Matrix._(mat);
+  }
 
   /// Cleans up native matrix resources.
   ///

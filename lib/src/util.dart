@@ -67,7 +67,8 @@ class OsqpException implements Exception {
   String toString() => 'OsqpException: $message (code $errorCode)';
 }
 
-/// Allocates and copies a [List<double>] to native [OSQPFloat] array memory using [allocator].
+/// Allocates and copies a [List<double>] to native [OSQPFloat] array memory
+/// using [allocator].
 ffi.Pointer<OSQPFloat> copyFloatList(
   ffi.Allocator allocator,
   List<double>? list,
@@ -75,7 +76,14 @@ ffi.Pointer<OSQPFloat> copyFloatList(
   if (list == null) return ffi.nullptr;
   final ptr = allocator<OSQPFloat>(list.length);
   for (var i = 0; i < list.length; i++) {
-    ptr[i] = list[i];
+    final v = list[i];
+    if (v > OSQP_INFTY) {
+      ptr[i] = OSQP_INFTY;
+    } else if (v < -OSQP_INFTY) {
+      ptr[i] = -OSQP_INFTY;
+    } else {
+      ptr[i] = v;
+    }
   }
   return ptr;
 }
