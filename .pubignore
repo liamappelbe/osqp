@@ -1,3 +1,16 @@
+# Include all package files (overriding .gitignore rules such as prebuilt/).
+!*
+!*/**
+
+# Exclude local build artifacts, git metadata, and pub cache.
+.dart_tool/
+.git/
+.github/
+build/
+pubspec.lock
+
+# Exclude package tools, publishing docs, and non-build third_party files.
+PUBLISHING.md
 tool/
 third_party/osqp/docs/
 third_party/osqp/tests/

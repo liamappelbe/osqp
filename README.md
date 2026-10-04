@@ -36,8 +36,24 @@ documentation.
 
 ## Building
 
-This package uses Dart build hooks to build the native OSQP C library using
-CMake. This works automatically, provided you have installed:
+Published versions of this package bundle prebuilt OSQP dynamic libraries for
+supported platforms (Android, iOS, Linux, macOS, and Windows), so no C compiler
+or CMake installation is required for normal usage.
+
+If a prebuilt binary is not available for your target platform (for example,
+when depending on this package via a git or path dependency), or if you prefer
+to compile OSQP from source locally, the Dart build hook automatically falls
+back to building the native OSQP C library using CMake. Local builds require:
 
 - CMake (version 3.18 or newer)
 - A C/C++ compiler toolchain (e.g., GCC, Clang, or MSVC)
+
+You can force a local source build in your app's `pubspec.yaml` via hook user
+defines:
+
+```yaml
+hooks:
+  user_defines:
+    osqp:
+      local_build: true
+```

@@ -1,0 +1,22 @@
+// Copyright (c) 2026 The Dart package:osqp authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+/// The target Android NDK API level for compilation.
+const androidTargetNdkApi = 30;
+
+/// The target macOS version for compilation.
+const int macOSTargetVersion = 13;
+
+/// The target iOS version for compilation.
+const iOSTargetVersion = 16;
