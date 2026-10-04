@@ -219,18 +219,28 @@ void main() {
       },
     );
 
-    test('fromTriplets throws on duplicate coordinates', () {
+    test('fromTriplets sums duplicate coordinates', () {
+      final mat = Matrix.fromTriplets(2, 2, [
+        (0, 0, 1.5),
+        (0, 0, 2.5),
+        (1, 0, 1.0),
+        (1, 0, -0.5),
+        (0, 1, 3.0),
+        (0, 0, -1.0),
+      ]);
+
+      expect(mat.rows, equals(2));
+      expect(mat.cols, equals(2));
+      expect(mat.nnz, equals(3));
       expect(
-        () => Matrix.fromTriplets(2, 2, [
-          (0, 0, 1.5),
-          (0, 0, 2.5),
-          (1, 0, 1.0),
-          (1, 0, -0.5),
-          (0, 1, 3.0),
-          (0, 0, -1.0),
-        ]),
-        throwsArgumentError,
+        mat.pointer.ref.p.cast<ffi.Int64>().asTypedList(3),
+        equals([0, 2, 3]),
       );
+      expect(
+        mat.pointer.ref.i.cast<ffi.Int64>().asTypedList(3),
+        equals([0, 1, 0]),
+      );
+      expect(mat.pointer.ref.x.asTypedList(3), equals([3.0, 0.5, 3.0]));
     });
 
     test('fromTriplets with upperTriangular folds lower entries to upper', () {
@@ -253,15 +263,15 @@ void main() {
       );
       expect(mat.pointer.ref.x.asTypedList(3), equals([4.0, 1.0, 2.0]));
 
-      expect(
-        () => Matrix.fromTriplets(2, 2, [
-          (0, 0, 4.0),
-          (1, 0, 2.0),
-          (0, 1, 3.0),
-          (1, 1, 1.0),
-        ], upperTriangular: true),
-        throwsArgumentError,
-      );
+      final summed = Matrix.fromTriplets(2, 2, [
+        (0, 0, 4.0),
+        (1, 0, 2.0),
+        (0, 1, 3.0),
+        (1, 1, 1.0),
+      ], upperTriangular: true);
+
+      expect(summed.nnz, equals(3));
+      expect(summed.pointer.ref.x.asTypedList(3), equals([4.0, 5.0, 1.0]));
     });
 
     test('fromTriplets validates index bounds and dimensions', () {

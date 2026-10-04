@@ -180,6 +180,7 @@ class Matrix implements Finalizable {
 
   /// Creates a [Matrix] from sparse triplet entries `(row, col, value)`.
   ///
+  /// Duplicate entries with the same coordinates are summed.
   /// If [upperTriangular] is `true`, entries `(r, c, v)` are folded into
   /// `(min(r, c), max(r, c), v)`.
   ///
@@ -229,11 +230,14 @@ class Matrix implements Finalizable {
       if (merged.isNotEmpty &&
           merged.last.row == entry.row &&
           merged.last.col == entry.col) {
-        throw ArgumentError(
-          'Duplicate entries at (${entry.row}, ${entry.col})',
+        merged.last = (
+          row: entry.row,
+          col: entry.col,
+          value: merged.last.value + entry.value,
         );
+      } else {
+        merged.add(entry);
       }
-      merged.add(entry);
     }
 
     final nnz = merged.length;
