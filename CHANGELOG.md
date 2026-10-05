@@ -1,4 +1,4 @@
-## 1.1.0-wip
+## 1.1.0
 
 - Duplicate entries in Matrix.fromTriplets are now summed instead of throwing.
 - Bundle prebuilt native OSQP dynamic libraries for supported platforms.
