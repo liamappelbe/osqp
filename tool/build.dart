@@ -21,14 +21,8 @@ import 'package:osqp/src/hook_helpers/cmake_build.dart';
 import 'package:osqp/src/hook_helpers/target_versions.dart';
 
 void main(List<String> args) async {
-  final (os: os, architecture: architecture, iOSSdk: iOSSdk) = parseArguments(
-    args,
-  );
-  await buildPrebuiltAsset(
-    OS.fromString(os),
-    Architecture.fromString(architecture),
-    iOSSdk != null ? IOSSdk.fromString(iOSSdk) : null,
-  );
+  final (os, architecture, iOSSdk) = parseArguments(args);
+  await buildPrebuiltAsset(os, architecture, iOSSdk);
 }
 
 /// Builds the native asset for [os], [architecture], and optional [iOSSdk]
@@ -58,9 +52,7 @@ Future<File> buildPrebuiltAsset(
   return await builtFile.copy(targetFile.path);
 }
 
-({String architecture, String os, String? iOSSdk}) parseArguments(
-  List<String> args,
-) {
+(OS, Architecture, IOSSdk?) parseArguments(List<String> args) {
   final parser = ArgParser()
     ..addOption(
       'architecture',
@@ -91,7 +83,11 @@ Future<File> buildPrebuiltAsset(
     print(parser.usage);
     exit(1);
   }
-  return (os: os, architecture: architecture, iOSSdk: iOSSdk);
+  return (
+    OS.fromString(os),
+    Architecture.fromString(architecture),
+    iOSSdk != null ? IOSSdk.fromString(iOSSdk) : null,
+  );
 }
 
 BuildInput createBuildInput(

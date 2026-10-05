@@ -17,12 +17,31 @@ import 'dart:io';
 import 'package:code_assets/code_assets.dart';
 import 'package:hooks/hooks.dart';
 import 'package:osqp/src/hook_helpers/cmake_build.dart';
+import 'package:osqp/src/hook_helpers/targets.dart';
 import 'package:test/test.dart';
+import 'package:yaml/yaml.dart';
 
 import '../hook/build.dart' as build_hook;
 import '../tool/build.dart';
 
 void main() {
+  test('CI workflow builds exact supportedTargets', () {
+    final ciYaml = loadYaml(
+      File('.github/workflows/ci.yaml').readAsStringSync(),
+    ) as YamlMap;
+    final steps =
+        ((ciYaml['jobs'] as YamlMap)['build'] as YamlMap)['steps'] as YamlList;
+    const prefix = 'dart tool/build.dart ';
+    final ciTargets = [
+      for (final step in steps)
+        if (step case {'run': final String run})
+          for (final line in run.split('\n'))
+            if (line.trim().startsWith(prefix))
+              parseArguments(line.trim().substring(prefix.length).split(' ')),
+    ];
+    expect(ciTargets, equals(supportedTargets));
+  });
+
   test('build hook runs CMake when local_build is true', () async {
     await testCodeBuildHook(
       mainMethod: build_hook.main,
