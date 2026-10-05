@@ -69,7 +69,10 @@ jobs:
       - run: dart pub get
 
       - name: Run tests (local CMake build)
-        run: dart test
+        shell: bash
+        run: |
+          dart test
+          grep "^osqp:" .dart_tool/hooks_runner/osqp/*/stdout.txt
 
       # Keep this list consistent with lib/src/hook_helpers/targets.dart
       - name: Build Linux & Android targets
@@ -111,6 +114,7 @@ jobs:
         run: |
           rm -rf .dart_tool/hooks_runner
           dart test
+          grep "^osqp:" .dart_tool/hooks_runner/osqp/*/stdout.txt
 
   publish:
     needs: [analyze, build]
@@ -140,6 +144,7 @@ jobs:
         run: |
           dart pub get
           dart test
+          grep "^osqp:" .dart_tool/hooks_runner/osqp/*/stdout.txt
 
       - name: Verify package with dart pub publish --dry-run
         run: dart pub publish --dry-run

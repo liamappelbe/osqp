@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:io';
-
 import 'package:code_assets/code_assets.dart';
 import 'package:hooks/hooks.dart';
 import 'package:logging/logging.dart';
@@ -38,7 +36,7 @@ Future<void> runBuild(BuildInput input, BuildOutputBuilder output) async {
 
   final logger = Logger.detached('')
     ..level = Level.ALL
-    ..onRecord.listen((record) => stderr.writeln(record.message));
+    ..onRecord.listen((record) => print(record.message));
 
   final builder = CMakeBuilder.create(
     name: packageName,

@@ -31,8 +31,10 @@ void main(List<String> args) async {
     final assetFile = File.fromUri(assetUri);
 
     if (localBuild || !assetFile.existsSync()) {
+      print('osqp: Building from source with CMake (local_build=$localBuild)');
       await runBuild(input, output);
     } else {
+      print('osqp: Using prebuilt asset ${assetUri.toFilePath()}');
       output.dependencies.add(assetUri);
       output.assets.code.add(
         CodeAsset(
