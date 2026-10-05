@@ -36,7 +36,7 @@ Future<void> runBuild(BuildInput input, BuildOutputBuilder output) async {
   final buildDir = input.outputDirectory.resolve('$targetName/');
   final installDir = buildDir.resolve('install/');
 
-  final logger = Logger('')
+  final logger = Logger.detached('')
     ..level = Level.ALL
     ..onRecord.listen((record) => stderr.writeln(record.message));
 
@@ -48,6 +48,7 @@ Future<void> runBuild(BuildInput input, BuildOutputBuilder output) async {
       'BUILD_SHARED_LIBS': 'ON',
       'OSQP_BUILD_SHARED_LIB': 'ON',
       'OSQP_BUILD_STATIC_LIB': 'OFF',
+      'OSQP_ENABLE_INTERRUPT': 'OFF',
       'CMAKE_INSTALL_PREFIX': installDir.toFilePath(),
       'CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS': 'ON',
     },
